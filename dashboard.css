@@ -1,0 +1,437 @@
+/* --- ROOT VARIABLES --- */
+:root {
+    --primary: #ff7b00;
+    --primary-dark: #e66a00;
+    --success: #28a745;
+    --white: #ffffff;
+    --text: #1a1a2e;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --disabled-gray: #ccc;
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* --- BASE STYLES --- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #f4f7f9 0%, #ffe0b2 100%);
+    min-height: 100vh;
+    overflow-y: auto;
+    color: var(--text);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px 80px 20px;
+}
+
+/* --- NAVBAR --- */
+.navbar {
+    background: var(--primary);
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(255, 123, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    color: var(--white);
+    font-size: 1.5rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile {
+    color: var(--white);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- HERO CARD --- */
+.hero-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+.hero-left {
+    width: 65%;
+}
+
+.hero-right {
+    text-align: right;
+    min-width: 150px;
+}
+
+.progress-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    height: 10px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--primary);
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+
+/* --- UPGRADE MODAL GRID SYSTEM --- */
+#upgrade-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 Columns for standard packs */
+    gap: 15px;
+    padding: 10px 0;
+    width: 100%;
+}
+
+/* Green Renewal Card (Spans both columns) */
+.upgrade-same-card {
+    grid-column: span 2;
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.2)) !important;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(40, 167, 69, 0.4) !important;
+    border-left: 5px solid var(--success) !important;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(40, 167, 69, 0.15);
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.upgrade-same-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(40, 167, 69, 0.25);
+}
+
+/* Yellow Glass Compact Cards (Side-by-Side) */
+.compact-plan-card.glass-yellow {
+    background: rgba(255, 193, 7, 0.05) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 193, 7, 0.2) !important;
+    border-top: 4px solid #ffc107 !important;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.compact-plan-card.glass-yellow:hover {
+    background: rgba(255, 193, 7, 0.1) !important;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(255, 193, 7, 0.1);
+}
+
+/* --- BUTTONS --- */
+.btn {
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+    font-size: 0.9rem;
+}
+
+.btn-fill {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-fill:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.renewal-btn-shiny {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.renewal-btn-shiny:after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: rotate(45deg);
+    transition: 0.5s;
+}
+
+.renewal-btn-shiny:hover:after {
+    left: 120%;
+}
+
+.select-btn-yellow {
+    background: #ffc107;
+    color: #000;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.select-btn-yellow:hover {
+    background: #ffca28;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}
+
+/* --- QUICK ACTIONS RESTORATION --- */
+.quick-actions {
+    display: flex;
+    /* Forces horizontal alignment */
+    justify-content: space-around;
+    /* Spreads items evenly */
+    gap: 10px;
+    padding: 20px 0;
+    overflow-x: auto;
+    /* Allows scrolling on small screens */
+    text-align: center;
+}
+
+.action {
+    display: flex;
+    flex-direction: column;
+    /* Keeps icon on top of text */
+    align-items: center;
+    /* Centers icon and text horizontally */
+    cursor: pointer;
+    min-width: 80px;
+}
+
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    /* Centers the icon inside the circle */
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: 0.3s;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.action:hover .icon-circle {
+    background: #ff7f00;
+    /* Original Swiftlink Orange */
+    color: white;
+    transform: scale(1.1);
+}
+
+/* --- SPECIAL OFFER MODAL (DECEMBER DESIGN) --- */
+.ad-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 12000;
+    justify-content: center;
+    align-items: center;
+}
+
+.special-offer-card {
+    background: white !important;
+    padding: 0 0 30px 0 !important;
+    border-radius: 20px;
+    width: 380px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.offer-header-bar {
+    height: 12px;
+    background: #ff7f00;
+    width: 100%;
+}
+
+.offer-icon-container {
+    margin: 25px auto 10px;
+    color: #ff7f00;
+    font-size: 3.5rem;
+}
+
+.special-offer-card h2 {
+    font-size: 1.8rem;
+    color: #222;
+    margin: 10px 0;
+    font-weight: 700;
+}
+
+.special-offer-card p {
+    color: #555;
+    margin-bottom: 25px;
+    padding: 0 20px;
+}
+
+.claim-now-btn {
+    background: #ff7f00;
+    color: white;
+    border: none;
+    width: 85%;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.claim-now-btn:hover {
+    background: #e66e00;
+    transform: scale(1.02);
+}
+
+/* --- MODALS GENERAL --- */
+#paymentModalOverlay,
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 550px;
+    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseDot {
+    0% {
+        transform: scale(0.9);
+        opacity: 1;
+    }
+
+    70% {
+        transform: scale(1.2);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(0.9);
+        opacity: 1;
+    }
+}
+
+.animated-card {
+    opacity: 0;
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+.pulse {
+    animation: pulseDot 2s infinite;
+    display: inline-block;
+}
+
+.status-badge {
+    color: var(--success);
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.animated-ad.active {
+    box-shadow: 0 0 30px rgba(255, 127, 0, 0.4);
+    transition: box-shadow 0.5s ease-in-out;
+}

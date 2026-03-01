@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Service Requests - Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff7f00;
+            --bg: #fff8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 20px;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item {
+            padding: 12px;
+            margin-bottom: 5px;
+            color: #666;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: #fff3e0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .content {
+            margin-left: 290px;
+            flex: 1;
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px;
+            background: #f9f9f9;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .btn-check {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class="fa-solid fa-wifi"></i> Swiftlink Admin</div>
+        <a href="/admin/dashboard" class="menu-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+        <a href="/admin/users" class="menu-item"><i class="fa-solid fa-users"></i> Users</a>
+        <a href="/admin/requests" class="menu-item active"><i class="fa-solid fa-inbox"></i> Requests</a> <a
+            href="/admin/settings" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</a>
+        <a href="/admin/logout" class="menu-item" style="margin-top: auto; color: #d32f2f;"><i
+                class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+
+    <div class="content">
+        <h2 style="margin-top:0;">Service Requests</h2>
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>{{ req.date.split(' ')[0] }}</td>
+                        <td>
+                            <b>{{ req.name }}</b><br>
+                            <small>{{ req.mobile_no }}</small>
+                        </td>
+                        <td><span style="font-weight:bold; color:var(--primary);">{{ req.service_type }}</span></td>
+                        <td>{{ req.address }}</td>
+                        <td>
+                            {% if req.status == 'Pending' %}
+                            <span class="badge badge-pending">Pending</span>
+                            {% else %}
+                            <span class="badge badge-completed">Done</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if req.status == 'Pending' %}
+                            <button class="btn-check" onclick="markDone('{{ req.id }}')"><i class="fa-solid fa-check"></i>
+                                Done</button>
+                            {% else %}
+                            <span style="color:#aaa;">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:20px; color:#999;">No new requests.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function markDone(id) {
+            if (confirm("Mark this request as completed?")) {
+                fetch(`/admin/close_request/${id}`, { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'Success') window.location.reload();
+                    });
+            }
+        }
+    </script>
+
+</body>
+
+</html>

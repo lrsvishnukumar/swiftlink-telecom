@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftLink - Secure Login</title>
+    <style>
+        /* [ ... Keep your existing CSS styles exactly as they were ... ] */
+        /* For brevity, I am hiding the CSS here, but KEEP IT in your file */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f7f6;
+            overflow: hidden;
+        }
+
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff8c00 0%, #ff6a00 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .splash-logo {
+            width: 120px;
+            animation: pulse 2s infinite;
+        }
+
+        .splash-text {
+            color: white;
+            font-size: 2.2rem;
+            margin-top: 15px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: slideUpFade 0.8s ease-out 0.5s forwards;
+        }
+
+        .wave-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 45%;
+            background: linear-gradient(to right, #ff8c00, #ff5e00);
+            border-bottom-left-radius: 50% 20%;
+            border-bottom-right-radius: 50% 20%;
+            z-index: 0;
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
+        }
+
+        #login-container {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+
+        .login-card {
+            background: white;
+            width: 380px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            top: 20px;
+        }
+
+        .login-logo {
+            width: 70px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin: 10px 0 5px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .role-toggle {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 30px;
+            padding: 5px;
+            margin-bottom: 25px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #777;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: white;
+            color: #ff8c00;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .signup-field {
+            display: none;
+            animation: slideDown 0.4s ease forwards;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 8px;
+            margin-left: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #ff8c00;
+        }
+
+        #otp-section {
+            display: none;
+            animation: fadeIn 0.5s;
+            margin-top: 15px;
+        }
+
+        .primary-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ff8c00;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3);
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .primary-btn:disabled {
+            background: #e0e0e0;
+            color: #a0a0a0;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none !important;
+        }
+
+        .primary-btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            background: #e67e00;
+        }
+
+        .toggle-link {
+            display: block;
+            margin-top: 20px;
+            color: #ff8c00;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .help-link {
+            display: block;
+            margin-top: 10px;
+            color: #999;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideUpFade {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                height: 0;
+                margin: 0;
+            }
+
+            to {
+                opacity: 1;
+                height: auto;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="splash-screen">
+        <svg class="splash-logo" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+            <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+        <div class="splash-text">SwiftLink</div>
+    </div>
+    <div class="wave-bg"></div>
+
+    <div id="login-container">
+        <div class="login-card">
+            <svg class="login-logo" viewBox="0 0 24 24" fill="#ff8c00" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" />
+                <path d="M2 17L12 22L22 17" stroke="#ff8c00" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                <path d="M2 12L12 17L22 12" stroke="#ff8c00" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+            <h2 id="page-title">Welcome Back</h2>
+            <p class="subtitle" id="page-subtitle">Login to manage your plan</p>
+
+            <div class="role-toggle">
+                <button class="toggle-btn active" id="btn-cust" onclick="switchRole('customer')">Customer</button>
+                <button class="toggle-btn" id="btn-admin" onclick="switchRole('admin')">Administrator</button>
+            </div>
+
+            <div id="customer-container">
+                <form id="customer-form" onsubmit="handleCustomerAuth(event)">
+                    <div class="signup-field">
+                        <div class="input-group"><label>Full Name</label><input type="text" id="fullname"
+                                placeholder="John Doe"></div>
+                    </div>
+                    <div class="signup-field">
+                        <div class="input-group"><label>City / Circle</label><input type="text" id="city"
+                                placeholder="e.g. Chennai"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Mobile Number</label>
+                        <input type="text" id="mobile" placeholder="98765 XXXXX" maxlength="10"
+                            oninput="validateMobile()">
+                    </div>
+                    <div class="input-group" id="otp-section">
+                        <label>Enter OTP</label>
+                        <input type="text" id="otp-input" placeholder="Enter 4-digit code" maxlength="4"
+                            style="letter-spacing: 5px; text-align: center; font-weight: bold;">
+                    </div>
+                    <button type="submit" id="mainBtn" class="primary-btn" disabled>Get OTP</button>
+                </form>
+                <a onclick="toggleSignupMode()" id="toggle-text" class="toggle-link">New User? Register Here</a>
+            </div>
+
+            <div id="admin-container" style="display: none;">
+                <form id="admin-form" onsubmit="handleAdminAuth(event)">
+                    <div class="input-group"><label>Admin ID</label><input type="text" placeholder="admin@swiftlink">
+                    </div>
+                    <div class="input-group"><label>Password</label><input type="password" placeholder="••••••••"></div>
+                    <button type="submit" class="primary-btn" style="background-color: #333;">Admin Login</button>
+                </form>
+            </div>
+            <a href="#" class="help-link">Need help? Contact Support</a>
+        </div>
+    </div>
+
+    <script>
+        let currentOTP = null;
+        let isSignupMode = false;
+        const BASE_URL = "http://127.0.0.1:5000";
+
+        window.onload = function () {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.transform = 'translateY(-100%)';
+                const loginBox = document.getElementById('login-container');
+                loginBox.style.display = 'flex';
+                setTimeout(() => { loginBox.style.opacity = '1'; }, 100);
+            }, 2500);
+        };
+
+        function switchRole(role) {
+            if (role === 'admin') { window.location.href = '/admin'; return; }
+            const btnCust = document.getElementById('btn-cust');
+            const btnAdmin = document.getElementById('btn-admin');
+            btnCust.classList.add('active');
+            btnAdmin.classList.remove('active');
+        }
+
+        function toggleSignupMode() {
+            isSignupMode = !isSignupMode;
+            const title = document.getElementById('page-title');
+            const toggleText = document.getElementById('toggle-text');
+            const signupFields = document.querySelectorAll('.signup-field');
+            const btn = document.getElementById('mainBtn');
+            document.getElementById('otp-section').style.display = 'none';
+            document.getElementById('customer-form').reset();
+            currentOTP = null;
+            validateMobile();
+
+            if (isSignupMode) {
+                title.innerText = "New Connection";
+                toggleText.innerText = "Already have an account? Login";
+                btn.innerText = "Register & Get OTP";
+                signupFields.forEach(field => field.style.display = 'block');
+            } else {
+                title.innerText = "Welcome Back";
+                toggleText.innerText = "New User? Register Here";
+                btn.innerText = "Get OTP";
+                signupFields.forEach(field => field.style.display = 'none');
+            }
+        }
+
+        function validateMobile() {
+            const mobileInput = document.getElementById('mobile');
+            const btn = document.getElementById('mainBtn');
+            mobileInput.value = mobileInput.value.replace(/[^0-9]/g, '');
+            if (mobileInput.value.length === 10) {
+                btn.disabled = false; btn.style.opacity = "1";
+            } else {
+                btn.disabled = true; btn.style.opacity = "0.6";
+            }
+        }
+
+        function handleCustomerAuth(event) {
+            event.preventDefault();
+            const btn = document.getElementById('mainBtn');
+            const otpBox = document.getElementById('otp-section');
+            const otpInput = document.getElementById('otp-input');
+            const mobile = document.getElementById('mobile').value;
+            const name = document.getElementById('fullname').value;
+            const city = document.getElementById('city').value;
+
+            if (!currentOTP) {
+                currentOTP = Math.floor(1000 + Math.random() * 9000);
+                btn.innerText = "Sending...";
+                setTimeout(() => {
+                    alert(`💬 SIMULATION MSG:\n\nSwiftLink Verification Code: ${currentOTP}`);
+                    otpBox.style.display = 'block';
+                    btn.innerText = isSignupMode ? "Verify & Register" : "Login Securely";
+                    otpInput.focus();
+                }, 1000);
+            } else {
+                if (otpInput.value == currentOTP) {
+                    btn.innerText = "Verifying...";
+                    btn.disabled = true;
+
+                    if (isSignupMode) {
+                        // FIXED: Send JSON instead of FormData to stop the 415 error
+                        fetch(`${BASE_URL}/api/register`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json' // CRITICAL HEADER
+                            },
+                            body: JSON.stringify({
+                                name: name,
+                                city: city,
+                                mobile_no: mobile
+                            })
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.status === "Success") {
+                                    localStorage.setItem('userMobile', mobile);
+                                    window.location.href = 'dashboard.html';
+                                } else {
+                                    alert("Registration failed: " + data.error);
+                                    btn.disabled = false;
+                                    btn.innerText = "Verify & Register";
+                                }
+                            })
+                            .catch(err => {
+                                console.error(err);
+                                alert("Server Error! Make sure Python is running.");
+                                btn.disabled = false;
+                            });
+                    } else {
+                        fetch(`${BASE_URL}/api/user/${mobile}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.name !== 'Guest') {
+                                    localStorage.setItem('userMobile', mobile);
+                                    window.location.href = 'dashboard.html';
+                                } else {
+                                    alert("❌ User not found! Please Register first.");
+                                    toggleSignupMode();
+                                }
+                            })
+                            .catch(err => {
+                                alert("Error connecting to server.");
+                                btn.disabled = false;
+                            });
+                    }
+                } else {
+                    alert("❌ Incorrect OTP");
+                    otpInput.value = "";
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

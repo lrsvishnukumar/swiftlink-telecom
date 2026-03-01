@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - SwiftLink</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Specific Profile Styling */
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-icon-large {
+            width: 100px;
+            height: 100px;
+            background: #fff3e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 3rem;
+            color: #ff7b00;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: bold;
+            color: #1a1a2e;
+        }
+
+        .sub-card {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='/dashboard.html'" style="cursor: pointer;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </div>
+        <div class="profile">My Profile</div>
+    </nav>
+
+    <div class="container" style="max-width: 800px;">
+
+        <div class="hero-card" style="display: block;">
+
+            <div class="profile-header">
+                <div class="profile-icon-large">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+                <h2 id="p-name" style="margin: 0; color: #1a1a2e;">Loading Name...</h2>
+                <p id="p-mobile" style="color: #666; margin-top: 5px;">...</p>
+            </div>
+
+            <h3 style="color: #ff7b00; border-bottom: 2px solid #ffe0b2; padding-bottom: 10px; margin-top: 30px;">
+                <i class="fa-solid fa-id-card"></i> Personal Details
+            </h3>
+
+            <div class="info-row">
+                <span class="info-label">Full Name</span>
+                <span class="info-value" id="detail-name">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Mobile Number</span>
+                <span class="info-value" id="detail-mobile">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">City / Circle</span>
+                <span class="info-value" id="detail-city">--</span>
+            </div>
+
+            <h3 style="color: #ff7b00; border-bottom: 2px solid #ffe0b2; padding-bottom: 10px; margin-top: 40px;">
+                <i class="fa-solid fa-bolt"></i> Current Subscription
+            </h3>
+
+            <div class="sub-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <span style="font-size: 0.9rem; color: #666;">Active Plan</span>
+                        <div id="p-plan-name" style="font-size: 1.5rem; font-weight: 800; color: #1a1a2e;">No Active
+                            Plan</div>
+                    </div>
+                    <div class="badge" style="position: static; display: inline-block;">Prepaid</div>
+                </div>
+
+                <div class="progress-container">
+                    <div id="p-data-bar" class="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <div style="font-weight: bold;">
+                        <i class="fa-solid fa-database" style="color: #ff7b00;"></i>
+                        <span id="p-data">0</span> GB Left
+                    </div>
+                    <div id="p-validity" style="font-weight: bold; color: #d32f2f;">
+                        Checking Validity...
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px; padding-bottom: 20px;">
+                <button onclick="logout()"
+                    style="padding: 10px 25px; border: 1px solid #d32f2f; background: transparent; color: #d32f2f; border-radius: 25px; cursor: pointer; font-weight: bold;">
+                    ⏻ Logout
+                </button>
+
+                <button onclick="showDeleteModal()"
+                    style="padding: 10px 25px; border: none; background: #d32f2f; color: white; border-radius: 25px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(211, 47, 47, 0.2);">
+                    🗑️ Delete Account
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = "http://127.0.0.1:5000";
+
+        function logout() {
+            localStorage.removeItem('userMobile');
+            window.location.href = "/";
+        }
+        // 1. Show the custom card
+        window.showDeleteModal = function () {
+            document.getElementById('deleteConfirmModal').style.display = 'flex';
+        };
+
+        // 2. Hide the custom card
+        window.hideDeleteModal = function () {
+            document.getElementById('deleteConfirmModal').style.display = 'none';
+        };
+
+        // 3. Execute the deletion (Linked to the "Yes, Delete" button inside the card)
+        window.executeDeleteAccount = function () {
+            const activeMobile = localStorage.getItem('userMobile');
+
+            if (!activeMobile) {
+                alert("Error: Could not identify user.");
+                return;
+            }
+
+            // Optional: Change button text to "Deleting..." so the user knows it's working
+            fetch('/api/delete_account', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mobile_no: activeMobile })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "Success") {
+                        // Success! Clear memory and redirect
+                        localStorage.removeItem('userMobile');
+                        window.location.href = "/";
+                    } else {
+                        alert("Deletion failed: " + data.error);
+                        hideDeleteModal();
+                    }
+                })
+                .catch(err => {
+                    console.error("Delete Error:", err);
+                    alert("Server Error. Please try again later.");
+                    hideDeleteModal();
+                });
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobile = localStorage.getItem('userMobile');
+            if (!mobile) {
+                window.location.href = "/";
+                return;
+            }
+
+            // Fetch User Data (Same API as Dashboard)
+            fetch(`${BASE_URL}/api/user/${mobile}`)
+                .then(res => res.json())
+                .then(data => {
+                    // 1. Fill Personal Details
+                    document.getElementById('p-name').innerText = data.name;
+                    document.getElementById('detail-name').innerText = data.name;
+                    document.getElementById('p-mobile').innerText = mobile;
+                    document.getElementById('detail-mobile').innerText = mobile;
+                    document.getElementById('detail-city').innerText = data.city;
+
+                    // 2. Fill Plan Details
+                    document.getElementById('p-plan-name').innerText = data.active_plan;
+
+                    // Clean Data Balance (Remove 'GB', 'Data' etc)
+                    let cleanBalance = data.data_balance.toString().replace(/[a-zA-Z]/g, '').trim();
+                    if (cleanBalance === '') cleanBalance = '0';
+                    document.getElementById('p-data').innerText = cleanBalance;
+
+                    // 3. Dynamic Validity Logic (Same as Dashboard)
+                    const valEl = document.getElementById('p-validity');
+
+                    if (data.days_left >= 0) {
+                        if (data.days_left === 0) {
+                            valEl.innerText = `Expiring Today (${data.expiry_date})`;
+                        } else {
+                            valEl.innerText = `Expiring in ${data.days_left} days (${data.expiry_date})`;
+                        }
+                        valEl.style.color = data.days_left < 5 ? '#d32f2f' : '#2e7d32';
+
+                        // Animate Bar
+                        setTimeout(() => {
+                            document.getElementById('p-data-bar').style.width = '65%';
+                        }, 500);
+                    } else {
+                        valEl.innerText = "Plan Expired";
+                        valEl.style.color = '#d32f2f';
+                        document.getElementById('p-data-bar').style.width = '0%';
+                    }
+                })
+                .catch(err => console.error(err));
+        });
+    </script>
+    <div id="deleteConfirmModal" class="modal-overlay"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10000; align-items: center; justify-content: center;">
+        <div
+            style="background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div style="font-size: 3rem; margin-bottom: 10px;">⚠️</div>
+            <h3 style="color: #d32f2f; margin-top: 0; font-family: 'Segoe UI', sans-serif;">Delete Account?</h3>
+            <p style="color: #555; font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5;">
+                Are you sure you want to permanently delete your account? All your recharge history and active plans
+                will be lost. This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="hideDeleteModal()"
+                    style="flex: 1; padding: 12px; border: 1px solid #ccc; background: white; color: #555; border-radius: 25px; cursor: pointer; font-weight: bold;">Cancel</button>
+                <button onclick="executeDeleteAccount()"
+                    style="flex: 1; padding: 12px; border: none; background: #d32f2f; color: white; border-radius: 25px; cursor: pointer; font-weight: bold;">Yes,
+                    Delete</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
